@@ -25,6 +25,12 @@ public class PersonDAO {
     }
 
     public Person show(int id){
+
         return people.stream().filter(person -> person.getId()==id).findAny().orElse(null);
+    }
+    public void createPerson(Person person){
+        person.setId(++COUNT_ID);
+        people.add(person);
+
     }
 }
