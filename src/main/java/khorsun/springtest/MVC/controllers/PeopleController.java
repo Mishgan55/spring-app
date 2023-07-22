@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,19 @@ public class PeopleController {
     personDAO.createPerson(person);
     return "redirect:/people";
 
+   }
+
+   @GetMapping("/{id}/edit")
+    public String showEdit(Model model,
+                           @PathVariable("id") int id){
+    model.addAttribute("person",personDAO.show(id));
+    return "people/edit";
+   }
+   @PatchMapping("/{id}")
+    public String edit(@ModelAttribute("person") Person person,
+                       @PathVariable("id") int id){
+    personDAO.update(person,id);
+    return "redirect:/people";
    }
 
 
