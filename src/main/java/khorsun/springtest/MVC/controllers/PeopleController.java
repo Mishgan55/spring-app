@@ -1,36 +1,34 @@
 package khorsun.springtest.MVC.controllers;
 
 
+import khorsun.springtest.MVC.dao.PersonDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 @Controller
-@RequestMapping("/first")
+@RequestMapping("/people")
 public class PeopleController {
-//    @GetMapping("/hello")
-//    public String sayHello(HttpServletRequest request) {
-//        String name = request.getParameter("name");
-//        String surname = request.getParameter("surname");
-//        System.out.println("Hello, my name is "+name+" "+ surname);
-//        return "first/hello";
-//    }
-    @GetMapping("/hello")
-    public String sayHello(@RequestParam(value = "name",required = false) String name,
-                           @RequestParam(value = "surname",required = false) String surname,
-                           Model model){
-        model.addAttribute("message","Hello, my name is "+name+" "+ surname);
-        return "first/hello";
+    private final PersonDAO personDAO;
+@Autowired
+    public PeopleController(PersonDAO personDAO) {
+        this.personDAO = personDAO;
     }
 
-    @GetMapping("goodbye")
-    public  String sayGoodBye(){
-        return "first/goodBye";
-    }
+    @GetMapping
+    public String index(Model model){
+    model.addAttribute("people",personDAO.index());
+    return "people/index";
+   }
+  @GetMapping("/{id}")
+   public String show(@PathVariable("id")int id,Model model){
+    model.addAttribute("person",personDAO.show(id));
+    return "people/show";
+   }
+
 
 }
