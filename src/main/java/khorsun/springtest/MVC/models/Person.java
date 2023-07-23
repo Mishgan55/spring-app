@@ -1,10 +1,20 @@
 package khorsun.springtest.MVC.models;
 
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 public class Person {
     private int id;
+    @NotEmpty(message = "name should not be empty")
+    @Size(max = 30, message = "name should be between 0 and 30 characters")
     private String name;
-
+    @Min( value = 0, message = "Age should be grater then 0")
     private int age;
+    @NotEmpty(message = "Email should not be empty")
+    @Email(message = "Please write down valid email")
 
     private String email;
 
