@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 
 
 @Controller
@@ -30,43 +31,43 @@ public class PeopleController {
         this.personDAO = personDAO;
     }
     @GetMapping()
-    public String index(Model model){
+    public String index(Model model) throws SQLException {
     model.addAttribute("people",personDAO.index());
     return "people/index";
     }
- @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model){
-    model.addAttribute("person",personDAO.show(id));
-    return "people/show";
-    }
-    @GetMapping("/new")
-    public String create(@ModelAttribute("person")Person person){
-    return "people/new";
-    }
-    @PostMapping()
-    public String createNewPerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
-    if (bindingResult.hasErrors())
-        return "people/new";
-    personDAO.create(person);
-    return "redirect:people";
-    }
-    @GetMapping("/{id}/edit")
-    public String showEdit(@PathVariable("id") int id,Model model){
-    model.addAttribute("person",personDAO.show(id));
-    return "people/edit";
-    }
-    @PatchMapping("/{id}")
-    public String edit(@ModelAttribute("person")@Valid Person person,
-                       BindingResult bindingResult,@PathVariable("id") int id){
-    if (bindingResult.hasErrors())
-        return "people/edit";
-    personDAO.edit(person,id);
-    return "redirect:people";
-    }
+// @GetMapping("/{id}")
+//    public String show(@PathVariable("id") int id, Model model){
+//    model.addAttribute("person",personDAO.show(id));
+//    return "people/show";
+//    }
+//    @GetMapping("/new")
+//    public String create(@ModelAttribute("person")Person person){
+//    return "people/new";
+//    }
+//    @PostMapping()
+//    public String createNewPerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
+//    if (bindingResult.hasErrors())
+//        return "people/new";
+//    personDAO.create(person);
+//    return "redirect:people";
+//    }
+//    @GetMapping("/{id}/edit")
+//    public String showEdit(@PathVariable("id") int id,Model model){
+//    model.addAttribute("person",personDAO.show(id));
+//    return "people/edit";
+//    }
+//    @PatchMapping("/{id}")
+//    public String edit(@ModelAttribute("person")@Valid Person person,
+//                       BindingResult bindingResult,@PathVariable("id") int id){
+//    if (bindingResult.hasErrors())
+//        return "people/edit";
+//    personDAO.edit(person,id);
+//    return "redirect:people";
+//    }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id")int id){
-    personDAO.delete(id);
-    return "redirect:people";
-    }
+//    @DeleteMapping("/{id}")
+//    public String delete(@PathVariable("id")int id){
+//    personDAO.delete(id);
+//    return "redirect:people";
+//    }
 }
