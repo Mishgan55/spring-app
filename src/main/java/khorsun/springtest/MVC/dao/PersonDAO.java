@@ -8,38 +8,45 @@ import java.util.List;
 
 @Component
 public class PersonDAO {
-    private static int COUNT_ID ;
+
     private List<Person> people;
+
+    private static int PEOPLE_COUNT;
 
     {
         people=new ArrayList<>();
 
-        people.add(new Person(++COUNT_ID,"Mikhail"));
-        people.add(new Person(++COUNT_ID,"Hanna"));
-        people.add(new Person(++COUNT_ID,"Ksenia"));
-        
+        people.add(new Person(++PEOPLE_COUNT,"Hanna",26,"hanna@gmail.com"));
+        people.add(new Person(++PEOPLE_COUNT,"Mikhail",25,"mikhail@gmail.com"));
+        people.add(new Person(++PEOPLE_COUNT,"Ksenia",9,"ksenia@gmail.com"));
+
+    }
+
+    public Person show(int id){
+        return people.stream().filter(person -> person.getId()==id).findAny().orElse(null);
     }
 
     public List<Person> index(){
         return people;
     }
 
-    public Person show(int id){
-
-        return people.stream().filter(person -> person.getId()==id).findAny().orElse(null);
-    }
-    public void createPerson(Person person){
-        person.setId(++COUNT_ID);
+    public void create(Person person){
+        person.setId(++PEOPLE_COUNT);
         people.add(person);
 
     }
-    public void update(Person updatedPerson,int id){
-        Person toBeUpdated = show(id);
-        toBeUpdated.setName(updatedPerson.getName());
+
+    public void edit(Person person,int id){
+        Person toUpdate = show(id);
+        toUpdate.setName(person.getName());
+        toUpdate.setAge(person.getAge());
+        toUpdate.setEmail(person.getEmail());
     }
 
     public void delete(int id){
         people.removeIf(person -> person.getId()==id);
+
     }
+
 
 }
