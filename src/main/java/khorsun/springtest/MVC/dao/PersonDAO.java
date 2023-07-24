@@ -2,113 +2,49 @@ package khorsun.springtest.MVC.dao;
 
 
 import khorsun.springtest.MVC.models.Person;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class PersonDAO {
 
-
-    private static int PEOPLE_COUNT;
-
-    private static Connection connection;
-
-    {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            connection= DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/spring_app",
-                    "postgres",
-                    "postgres");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private final JdbcTemplate jdbcTemplate;
+@Autowired
+    public PersonDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Person show(int id) {
 
+        return  jdbcTemplate.query("SELECT * FROM spring_app.public.person WHERE id=?",new Object[]{id},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+    }
 
-    public Person show(int id) throws SQLException {
-        Person person = new Person();
-        PreparedStatement preparedStatement=
-                connection.prepareStatement("SELECT * FROM spring_app.public.person WHERE ID=?");
-        preparedStatement.setInt(1,id);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
+    public List<Person> index() {
 
-        person.setId(resultSet.getInt("id"));
-        person.setName(resultSet.getString("name"));
-        person.setAge(resultSet.getInt("age"));
-        person.setEmail(resultSet.getString("email"));
+        return jdbcTemplate.query("SELECT * FROM spring_app.public.person",
+                new BeanPropertyRowMapper<>(Person.class));
+    }
 
-        return  person;
+    public void create(Person person) {
+
+    jdbcTemplate.update("insert into spring_app.public.person values (1,?,?,?)",
+            person.getName(),person.getAge(),person.getEmail());
 
     }
 
-    public List<Person> index() throws SQLException {
-        List<Person> people=new ArrayList<>();
-
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM spring_app.public.person");
-        while (resultSet.next()){
-            Person person = new Person();
-
-            person.setId(resultSet.getInt("id"));
-            person.setName(resultSet.getString("name"));
-            person.setAge(resultSet.getInt("age"));
-            person.setEmail(resultSet.getString("email"));
-
-            people.add(person);
-        }
-
-        return people;
+    public void edit(Person person,int id) {
+    jdbcTemplate.update("update spring_app.public.person set name=?,age=?,email=? where id=?",
+            person.getName(),person.getAge(),person.getEmail(),id);
     }
 
-    public void create(Person person) throws SQLException {
+    public void delete(int id)  {
 
-        PreparedStatement preparedStatement= connection.prepareStatement(
-                "INSERT INTO spring_app.public.person VALUES (1,?,?,?)");
-        preparedStatement.setString(1, person.getName());
-        preparedStatement.setInt(2,person.getAge());
-        preparedStatement.setString(3, person.getEmail());
+    jdbcTemplate.update("delete from spring_app.public.person where id=?",id);
 
-        preparedStatement.executeUpdate();
-
-
-    }
-
-    public void edit(Person person,int id) throws SQLException {
-
-        PreparedStatement preparedStatement=
-                connection.prepareStatement("UPDATE spring_app.public.person SET name=?, age=?, email=? WHERE id=?");
-        preparedStatement.setString(1, person.getName());
-        preparedStatement.setInt(2,person.getAge());
-        preparedStatement.setString(3, person.getEmail());
-        preparedStatement.setInt(4,id);
-
-        preparedStatement.executeUpdate();
-
-
-    }
-
-    public void delete(int id) throws SQLException {
-        PreparedStatement preparedStatement=
-                connection.prepareStatement("DELETE FROM spring_app.public.person WHERE id=?");
-
-        preparedStatement.setInt(1,id);
-
-        preparedStatement.executeUpdate();
 
     }
 

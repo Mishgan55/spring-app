@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
+
 
 
 @Controller
@@ -31,12 +31,12 @@ public class PeopleController {
         this.personDAO = personDAO;
     }
     @GetMapping()
-    public String index(Model model) throws SQLException {
+    public String index(Model model){
     model.addAttribute("people",personDAO.index());
     return "people/index";
     }
  @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model) throws SQLException {
+    public String show(@PathVariable("id") int id, Model model) {
     model.addAttribute("person",personDAO.show(id));
     return "people/show";
     }
@@ -48,21 +48,19 @@ public class PeopleController {
     public String createNewPerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
     if (bindingResult.hasErrors())
         return "people/new";
-        try {
+
             personDAO.create(person);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
         return "redirect:/people";
     }
     @GetMapping("/{id}/edit")
-    public String showEdit(@PathVariable("id") int id,Model model) throws SQLException {
+    public String showEdit(@PathVariable("id") int id,Model model){
     model.addAttribute("person",personDAO.show(id));
     return "people/edit";
     }
     @PatchMapping("/{id}")
     public String edit(@ModelAttribute("person")@Valid Person person,
-                       BindingResult bindingResult,@PathVariable("id") int id) throws SQLException {
+                       BindingResult bindingResult,@PathVariable("id") int id){
     if (bindingResult.hasErrors())
         return "people/edit";
     personDAO.edit(person,id);
@@ -70,7 +68,7 @@ public class PeopleController {
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id")int id) throws SQLException {
+    public String delete(@PathVariable("id")int id){
     personDAO.delete(id);
     return "redirect:/people";
     }
