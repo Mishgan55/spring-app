@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,9 +39,22 @@ public class PersonDAO {
 
 
 
-//    public Person show(int id){
-//        return people.stream().filter(person -> person.getId()==id).findAny().orElse(null);
-//    }
+    public Person show(int id) throws SQLException {
+        Person person = new Person();
+        PreparedStatement preparedStatement=
+                connection.prepareStatement("SELECT * FROM spring_app.public.person WHERE ID=?");
+        preparedStatement.setInt(1,id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+
+        person.setId(resultSet.getInt("id"));
+        person.setName(resultSet.getString("name"));
+        person.setAge(resultSet.getInt("age"));
+        person.setEmail(resultSet.getString("email"));
+
+        return  person;
+
+    }
 
     public List<Person> index() throws SQLException {
         List<Person> people=new ArrayList<>();
@@ -61,23 +75,42 @@ public class PersonDAO {
         return people;
     }
 
-//    public void create(Person person){
-//        person.setId(++PEOPLE_COUNT);
-//        people.add(person);
-//
-//    }
+    public void create(Person person) throws SQLException {
 
-//    public void edit(Person person,int id){
-//        Person toUpdate = show(id);
-//        toUpdate.setName(person.getName());
-//        toUpdate.setAge(person.getAge());
-//        toUpdate.setEmail(person.getEmail());
-//    }
-//
-//    public void delete(int id){
-//        people.removeIf(person -> person.getId()==id);
-//
-//    }
+        PreparedStatement preparedStatement= connection.prepareStatement(
+                "INSERT INTO spring_app.public.person VALUES (1,?,?,?)");
+        preparedStatement.setString(1, person.getName());
+        preparedStatement.setInt(2,person.getAge());
+        preparedStatement.setString(3, person.getEmail());
+
+        preparedStatement.executeUpdate();
+
+
+    }
+
+    public void edit(Person person,int id) throws SQLException {
+
+        PreparedStatement preparedStatement=
+                connection.prepareStatement("UPDATE spring_app.public.person SET name=?, age=?, email=? WHERE id=?");
+        preparedStatement.setString(1, person.getName());
+        preparedStatement.setInt(2,person.getAge());
+        preparedStatement.setString(3, person.getEmail());
+        preparedStatement.setInt(4,id);
+
+        preparedStatement.executeUpdate();
+
+
+    }
+
+    public void delete(int id) throws SQLException {
+        PreparedStatement preparedStatement=
+                connection.prepareStatement("DELETE FROM spring_app.public.person WHERE id=?");
+
+        preparedStatement.setInt(1,id);
+
+        preparedStatement.executeUpdate();
+
+    }
 
 
 }
