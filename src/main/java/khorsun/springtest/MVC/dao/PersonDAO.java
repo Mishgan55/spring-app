@@ -19,7 +19,11 @@ public class PersonDAO {
 
     public Person show(int id) {
 
-        return  jdbcTemplate.query("SELECT * FROM spring_app.public.person WHERE id=?",new Object[]{id},
+        return  jdbcTemplate.query("SELECT * FROM spring_app.public.person WHERE person_id=?",new Object[]{id},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+    }
+    public Person show(String email){
+        return  jdbcTemplate.query("select * from spring_app.public.person where email=?",new Object[]{email},
                 new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 
@@ -31,19 +35,19 @@ public class PersonDAO {
 
     public void create(Person person) {
 
-    jdbcTemplate.update("insert into spring_app.public.person values (1,?,?,?)",
+    jdbcTemplate.update("insert into spring_app.public.person(name, age, email) values (?,?,?)",
             person.getName(),person.getAge(),person.getEmail());
 
     }
 
     public void edit(Person person,int id) {
-    jdbcTemplate.update("update spring_app.public.person set name=?,age=?,email=? where id=?",
+    jdbcTemplate.update("update spring_app.public.person set name=?,age=?,email=? where person_id=?",
             person.getName(),person.getAge(),person.getEmail(),id);
     }
 
     public void delete(int id)  {
 
-    jdbcTemplate.update("delete from spring_app.public.person where id=?",id);
+    jdbcTemplate.update("delete from spring_app.public.person where person_id=?",id);
 
 
     }

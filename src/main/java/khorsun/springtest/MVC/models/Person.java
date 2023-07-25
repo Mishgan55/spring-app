@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 public class Person {
-    private int id;
+    private int personId;
     @NotEmpty(message = "name should not be empty")
     @Size(max = 30, message = "name should be between 0 and 30 characters")
     private String name;
@@ -21,18 +21,18 @@ public class Person {
     }
 
     public Person(int id, String name, int age, String email) {
-        this.id = id;
+        this.personId = id;
         this.name = name;
         this.age = age;
         this.email = email;
     }
 
-    public int getId() {
-        return id;
+    public int getPersonId() {
+        return personId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 
     public String getName() {
