@@ -23,11 +23,12 @@ public class PersonDAO {
         this.jdbcTemplate = jdbcTemplate;
         this.sessionFactory = sessionFactory1;
 }
-
+    @Transactional(readOnly = true)
     public Person show(int id) {
+         Session session = sessionFactory.getCurrentSession();
+         Person person = session.get(Person.class, id);
 
-        return  jdbcTemplate.query("SELECT * FROM hibernate_demo_db.public.person WHERE person_id=?",new Object[]{id},
-                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+         return  person;
     }
     public Person show(String email){
         return  jdbcTemplate.query("select * from hibernate_demo_db.public.person where email=?",new Object[]{email},
@@ -37,27 +38,28 @@ public class PersonDAO {
     public List<Person> index() {
         Session session = sessionFactory.getCurrentSession();
         List<Person> resultList = session.createQuery("select p from Person p", Person.class).getResultList();
-        System.out.println(resultList);
-
-
         return resultList;
     }
-
+    @Transactional
     public void create(Person person) {
 
-    jdbcTemplate.update("insert into hibernate_demo_db.public.person(name, age, email) values (?,?,?)",
-            person.getName(),person.getAge(),person.getEmail());
+        Session session = sessionFactory.getCurrentSession();
+
+        session.save(person);
 
     }
-
+    @Transactional
     public void edit(Person person,int id) {
-    jdbcTemplate.update("update hibernate_demo_db.public.person set name=?,age=?,email=? where person_id=?",
-            person.getName(),person.getAge(),person.getEmail(),id);
+        Session session = sessionFactory.getCurrentSession();
+        Person personToUpdate = session.get(Person.class, id);
+        personToUpdate.setName(person.getName());
+        personToUpdate.setAge(person.getAge());
+        personToUpdate.setEmail(person.getEmail());
     }
-
+    @Transactional
     public void delete(int id)  {
-
-    jdbcTemplate.update("delete from hibernate_demo_db.public.person where person_id=?",id);
+        Session session = sessionFactory.getCurrentSession();
+        session.remove(session.get(Person.class,id));
 
 
     }
