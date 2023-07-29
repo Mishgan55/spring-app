@@ -2,8 +2,8 @@ package khorsun.springtest.MVC.controllers;
 
 
 
-import khorsun.springtest.MVC.dao.PersonDAO;
 import khorsun.springtest.MVC.models.Person;
+import khorsun.springtest.MVC.services.PersonService;
 import khorsun.springtest.MVC.util.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,22 +25,24 @@ import javax.validation.Valid;
 @RequestMapping("/people")
 public class PeopleController {
 
-    private final PersonDAO personDAO;
-    private final PersonValidator personValidator;
 
-@Autowired
-    public PeopleController(PersonDAO personDAO, PersonValidator personValidator) {
-        this.personDAO = personDAO;
-    this.personValidator = personValidator;
-}
+    private final PersonValidator personValidator;
+    private final PersonService personService;
+
+    @Autowired
+    public PeopleController(PersonValidator personValidator, PersonService personService) {
+
+        this.personValidator = personValidator;
+        this.personService = personService;
+    }
     @GetMapping()
     public String index(Model model){
-    model.addAttribute("people",personDAO.index());
+    model.addAttribute("people",personService.findAll());
     return "people/index";
     }
  @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
-    model.addAttribute("person",personDAO.show(id));
+    model.addAttribute("person",personService.findOne(id));
     return "people/show";
     }
     @GetMapping("/new")
@@ -53,13 +55,13 @@ public class PeopleController {
     if (bindingResult.hasErrors())
         return "people/new";
 
-            personDAO.create(person);
+            personService.create(person);
 
         return "redirect:/people";
     }
     @GetMapping("/{id}/edit")
     public String showEdit(@PathVariable("id") int id,Model model){
-    model.addAttribute("person",personDAO.show(id));
+    model.addAttribute("person",personService.findOne(id));
     return "people/edit";
     }
     @PatchMapping("/{id}")
@@ -68,13 +70,13 @@ public class PeopleController {
         personValidator.validate(person,bindingResult);
     if (bindingResult.hasErrors())
         return "people/edit";
-    personDAO.edit(person,id);
+    personService.update(id, person);
     return "redirect:/people";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id")int id){
-    personDAO.delete(id);
+    personService.delete(id);
     return "redirect:/people";
     }
 }
